@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Buenos Aires Daily</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=UnifrakturMaguntia&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root{
+    --bg: #131313;
+    --panel: #1c1c1c;
+    --panel-2: #232323;
+    --hairline: rgba(255,255,255,0.08);
+    --text: #ece9e4;
+    --text-dim: #a8a5a0;
+    --text-faint: #6f6c68;
+    --yellow: #f4c531;
+    --yellow-dim: #d9ae1f;
+  }
+
+  *{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; }
+  body{
+    background: radial-gradient(120% 140% at 15% -10%, #1b1b1b 0%, #101010 55%, #0b0b0b 100%);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    padding: 28px 20px 60px;
+  }
+
+  .frame{
+    max-width: 1180px;
+    margin: 0 auto;
+    background: var(--bg);
+    border: 1px solid var(--hairline);
+    border-radius: 22px;
+    overflow: hidden;
+    box-shadow: 0 40px 90px -30px rgba(0,0,0,0.7);
+  }
+
+  /* HEADER */
+  header{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding: 22px 32px 18px;
+  }
+  .header-left{
+    display:flex; align-items:center; gap:14px;
+    flex: 1;
+  }
+  .burger{
+    width:38px; height:38px;
+    border-radius:10px;
+    background: var(--panel-2);
+    border:1px solid var(--hairline);
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    flex-shrink:0;
+    transition: background .15s ease, border-color .15s ease;
+  }
+  .burger:hover{ background:#292929; border-color: rgba(244,197,49,0.35); }
+  .burger .bars{ width:16px; height:11px; position:relative; }
+  .burger .bars span{
+    position:absolute; left:0; width:100%; height:1.5px;
+    background: var(--text-dim);
+    border-radius: 1px;
+    transition: transform .28s ease, opacity .2s ease, top .28s ease, background .15s ease;
+  }
+  .burger .bars span:nth-child(1){ top:0; }
+  .burger .bars span:nth-child(2){ top:5px; }
+  .burger .bars span:nth-child(3){ top:10px; }
+  .burger.open .bars span{ background: var(--yellow); }
+  .burger.open .bars span:nth-child(1){ top:5px; transform: rotate(45deg); }
+  .burger.open .bars span:nth-child(2){ opacity:0; }
+  .burger.open .bars span:nth-child(3){ top:5px; transform: rotate(-45deg); }
+
+  .mobile-drawer{
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height .32s ease;
+    padding: 0 32px;
+  }
+  .mobile-drawer.open{ max-height: 420px; }
+  .mobile-drawer-inner{
+    display:flex; flex-direction:column; gap:4px;
+    padding: 4px 0 20px;
+    border-bottom: 1px solid var(--hairline);
+    margin-bottom: 8px;
+  }
+  .mobile-drawer a{
+    text-decoration:none;
+    color: var(--text-dim);
+    font-size: 13.5px;
+    font-weight: 600;
+    padding: 10px 6px;
+    border-bottom: 1px solid var(--hairline);
+    transition: color .15s ease;
+  }
+  .mobile-drawer a:last-child{ border-bottom:none; }
+  .mobile-drawer a:hover{ color: var(--yellow); }
+
+  .date-pill{
+    font-size: 12.5px;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+  }
+
+  .brand{
+    font-family: 'UnifrakturMaguntia', 'Fraunces', serif;
+    font-size: 30px;
+    color: var(--text);
+    text-align: center;
+    letter-spacing: 0.5px;
+    flex: 1.4;
+  }
+
+  .header-right{
+    flex:1;
+    display:flex; align-items:center; justify-content:flex-end; gap:12px;
+  }
+  .search{
+    display:flex; align-items:center; gap:8px;
+    background: var(--panel-2);
+    border:1px solid var(--hairline);
+    border-radius: 999px;
+    padding: 9px 16px;
+    color: var(--text-faint);
+    font-size: 13px;
+    min-width: 150px;
+  }
+  .search svg{ width:14px; height:14px; opacity:0.7; flex-shrink:0; }
+
+  .subscribe{
+    background: var(--yellow);
+    color: #1a1500;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 11px 20px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.15s ease, transform 0.15s ease;
+  }
+  .subscribe:hover{ background: var(--yellow-dim); transform: translateY(-1px); }
+
+  /* NAV */
+  nav{
+    display:flex;
+    gap: 6px;
+    padding: 0 32px 22px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--hairline);
+    margin-bottom: 28px;
+  }
+  nav a{
+    text-decoration:none;
+    color: var(--text-dim);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    font-weight: 600;
+    padding: 9px 14px;
+    border-radius: 999px;
+    transition: background 0.15s ease, color 0.15s ease;
+  }
+  nav a:hover{ color: var(--text); background: var(--panel-2); }
+  nav a.active{ background: var(--panel-2); color: var(--text); border: 1px solid var(--hairline); }
+
+  /* MAIN GRID */
+  main{
+    display:grid;
+    grid-template-columns: 1.55fr 1fr;
+    gap: 26px;
+    padding: 0 32px 40px;
+  }
+
+  .eyebrow{
+    font-size: 11.5px;
+    letter-spacing: 0.14em;
+    font-weight: 700;
+    color: var(--text-faint);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  /* HERO */
+  .hero{
+    position: relative;
+    border-radius: 18px;
+    overflow: hidden;
+    background: #000;
+    min-height: 560px;
+    display:flex;
+    align-items: flex-end;
+  }
+  .hero img{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    object-fit: cover;
+    filter: grayscale(1) contrast(1.08);
+    object-position: 60% 20%;
+  }
+  .hero::after{
+    content:'';
+    position:absolute; inset:0;
+    background: linear-gradient(100deg, rgba(10,10,10,0.94) 0%, rgba(10,10,10,0.75) 32%, rgba(10,10,10,0.15) 58%, rgba(10,10,10,0.05) 100%),
+                linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0) 42%);
+  }
+  .hero-content{
+    position:relative;
+    z-index:2;
+    padding: 34px 30px 30px;
+    width: 100%;
+  }
+  .hero h1{
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 44px;
+    line-height: 1.08;
+    margin: 0 0 18px;
+    color: var(--yellow);
+    max-width: 420px;
+  }
+  .hero h1 em{
+    font-style: italic;
+    font-weight: 400;
+    color: var(--text);
+  }
+  .hero-meta{
+    display:flex; align-items:center; gap:14px;
+    margin-bottom: 22px;
+  }
+  .hero-meta .read-time{ font-size: 12px; color: var(--text-dim); }
+  .byline{
+    display:flex; align-items:center; gap:8px;
+    font-size: 12px;
+    color: var(--text-dim);
+    font-weight: 600;
+  }
+  .byline .avatar{
+    width:20px; height:20px; border-radius:50%;
+    background: linear-gradient(135deg,#555,#222);
+    border: 1px solid var(--hairline);
+  }
+
+  .pagination{ display:flex; gap:8px; }
+  .pagination button{
+    width: 30px; height:30px;
+    border-radius:8px;
+    border:1px solid var(--hairline);
+    background: rgba(255,255,255,0.04);
+    color: var(--text-dim);
+    font-size: 12px;
+    font-weight:600;
+    cursor:pointer;
+  }
+  .pagination button.active{
+    background: var(--yellow);
+    color: #1a1500;
+    border-color: var(--yellow);
+  }
+
+  /* NEXT strip */
+  .next-strip{ margin-top: 20px; }
+  .next-card{
+    display:flex; align-items:center; gap:14px;
+    background: var(--panel);
+    border: 1px solid var(--hairline);
+    border-radius: 14px;
+    padding: 10px;
+    text-decoration:none;
+    color: var(--text);
+    transition: border-color .15s ease, background .15s ease;
+  }
+  .next-card:hover{ border-color: rgba(244,197,49,0.4); background: var(--panel-2); }
+  .next-card img{
+    width: 64px; height: 52px; border-radius: 9px; object-fit: cover; flex-shrink:0;
+  }
+  .next-card .title{ font-size: 13.5px; font-weight: 600; line-height:1.3; margin-bottom:4px; }
+  .next-card .sub{ font-size: 11px; color: var(--text-faint); }
+
+  /* SIDEBAR */
+  .sidebar{ display:flex; flex-direction:column; gap:16px; }
+
+  .feature-card{
+    background: var(--panel);
+    border: 1px solid var(--hairline);
+    border-radius: 16px;
+    overflow: hidden;
+  }
+  .feature-card img{
+    width:100%; height: 150px; object-fit: cover; display:block;
+  }
+  .feature-card .body{ padding: 16px 18px 18px; }
+  .feature-card h3{
+    font-family: 'Fraunces', serif;
+    font-weight: 600;
+    font-size: 18px;
+    line-height:1.3;
+    margin: 0 0 8px;
+  }
+  .feature-card p{
+    font-size: 12.5px;
+    color: var(--text-dim);
+    line-height: 1.55;
+    margin: 0 0 12px;
+  }
+  .feature-card .read-time{ font-size: 11px; color: var(--text-faint); }
+
+  .mini-card{
+    display:flex; align-items:center; gap:14px;
+    background: var(--panel);
+    border: 1px solid var(--hairline);
+    border-radius: 16px;
+    padding: 12px;
+    text-decoration:none;
+    color: var(--text);
+    transition: border-color .15s ease;
+  }
+  .mini-card:hover{ border-color: rgba(244,197,49,0.4); }
+  .mini-card img{
+    width: 68px; height: 60px; border-radius: 10px; object-fit: cover; flex-shrink:0;
+  }
+  .mini-card .title{ font-size: 13.5px; font-weight:600; line-height:1.3; margin-bottom:5px; }
+  .mini-card .read-time{ font-size: 11px; color: var(--text-faint); }
+
+  @media (max-width: 880px){
+    header{ flex-wrap: wrap; gap: 14px; }
+    .brand{ order: -1; flex: 1 0 100%; margin-bottom: 4px; }
+    main{ grid-template-columns: 1fr; }
+    .hero{ min-height: 460px; }
+    .hero h1{ font-size: 34px; }
+  }
+</style>
+</head>
+<body>
+  <div class="frame">
+    <header>
+      <div class="header-left">
+        <button class="burger" id="burgerBtn" aria-label="Open menu" aria-expanded="false" aria-controls="mobileDrawer">
+          <span class="bars"><span></span><span></span><span></span></span>
+        </button>
+        <span class="date-pill" id="dateDisplay">Saturday, August 8, 2026</span>
+      </div>
+      <div class="brand">Buenos Aires Daily</div>
+      <div class="header-right">
+        <div class="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          Search
+        </div>
+        <button class="subscribe">Subscribe now</button>
+      </div>
+    </header>
+
+    <div class="mobile-drawer" id="mobileDrawer">
+      <div class="mobile-drawer-inner">
+        <a href="#">World</a>
+        <a href="#">Argentina</a>
+        <a href="#">Politics</a>
+        <a href="#">Buenos Aires</a>
+        <a href="#">Opinion</a>
+        <a href="#">Science</a>
+        <a href="#">Health</a>
+        <a href="#">Sports</a>
+        <a href="#">Arts</a>
+        <a href="#">Books</a>
+        <a href="#">Style</a>
+        <a href="#">Food</a>
+        <a href="#">Travel</a>
+        <a href="#">Magazine</a>
+      </div>
+    </div>
+
+    <nav>
+      <a href="#">World</a>
+      <a href="#">Argentina</a>
+      <a href="#" class="active">Politics</a>
+      <a href="#">Buenos Aires</a>
+      <a href="#">Opinion</a>
+      <a href="#">Science</a>
+      <a href="#">Health</a>
+      <a href="#">Sports</a>
+      <a href="#">Arts</a>
+      <a href="#">Books</a>
+      <a href="#">Style</a>
+      <a href="#">Food</a>
+      <a href="#">Travel</a>
+      <a href="#">Magazine</a>
+    </nav>
+
+    <main>
+      <div>
+        <div class="hero">
+          <img src="https://picsum.photos/seed/jennaportrait/900/1100" alt="Portrait">
+          <div class="hero-content">
+            <span class="eyebrow">Politics</span>
+            <h1>The response has been <em>huge</em> says Jenna.</h1>
+            <div class="hero-meta">
+              <span class="read-time">10 min read</span>
+            </div>
+            <div class="byline" style="margin-bottom:22px;">
+              <span class="avatar"></span> BY JOHN MULLER
+            </div>
+            <div class="pagination">
+              <button class="active">1</button>
+              <button>2</button>
+              <button>3</button>
+              <button>4</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="next-strip">
+          <span class="eyebrow" style="margin-left:4px;">Next</span>
+          <a href="#" class="next-card">
+            <img src="https://picsum.photos/seed/handsnext/200/150" alt="">
+            <div>
+              <div class="title">The response has been huge says Jenna Mekks.</div>
+              <div class="sub">10 min read</div>
+            </div>
+          </a>
+        </div>
+      </div>
+
+      <div class="sidebar">
+        <div class="feature-card">
+          <img src="https://picsum.photos/seed/citybike/500/300" alt="City skyline">
+          <div class="body">
+            <h3>The response has been huge says Jenna Mekks.</h3>
+            <p>A wonderful serenity has taken possession of my entire soul, like these sweet mornings of spring which I enjoy with my whole heart.</p>
+            <span class="read-time">10 min read</span>
+          </div>
+        </div>
+
+        <a href="#" class="mini-card">
+          <img src="https://picsum.photos/seed/handsclose/200/160" alt="">
+          <div>
+            <div class="title">The response has been huge.</div>
+            <div class="read-time">10 min read</div>
+          </div>
+        </a>
+
+        <a href="#" class="mini-card">
+          <img src="https://picsum.photos/seed/frogleaf/200/160" alt="">
+          <div>
+            <div class="title">The response has been huge.</div>
+            <div class="read-time">10 min read</div>
+          </div>
+        </a>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Hamburger: toggles icon into an X and opens/closes the mobile nav drawer
+    const burgerBtn = document.getElementById('burgerBtn');
+    const mobileDrawer = document.getElementById('mobileDrawer');
+    burgerBtn.addEventListener('click', () => {
+      const isOpen = burgerBtn.classList.toggle('open');
+      mobileDrawer.classList.toggle('open', isOpen);
+      burgerBtn.setAttribute('aria-expanded', isOpen);
+      burgerBtn.setAttribute('aria-label', isOpen ? 'Close menu' : 'Open menu');
+    });
+    // Clicking a link inside the drawer closes it too
+    mobileDrawer.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        burgerBtn.classList.remove('open');
+        mobileDrawer.classList.remove('open');
+        burgerBtn.setAttribute('aria-expanded', 'false');
+      });
+    });
+
+    // Pagination: clicking a page number swaps the active state
+    document.querySelectorAll('.pagination button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.pagination button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    });
+
+    // Nav links: clicking sets the active category
+    document.querySelectorAll('nav a').forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        document.querySelectorAll('nav a').forEach(a => a.classList.remove('active'));
+        link.classList.add('active');
+      });
+    });
+
+    // Search: click to reveal a real input, focus it, collapse on blur if empty
+    const searchBox = document.querySelector('.search');
+    searchBox.addEventListener('click', () => {
+      if (searchBox.querySelector('input')) return;
+      const label = searchBox.childNodes[searchBox.childNodes.length - 1];
+      label.textContent = '';
+      const input = document.createElement('input');
+      input.type = 'text';
+      input.placeholder = 'Search articles…';
+      input.style.cssText = 'background:none;border:none;outline:none;color:inherit;font:inherit;width:100%;';
+      searchBox.appendChild(input);
+      input.focus();
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && input.value.trim()) {
+          alert('Searching for: ' + input.value.trim());
+        }
+      });
+      input.addEventListener('blur', () => {
+        if (!input.value.trim()) {
+          input.remove();
+          label.textContent = 'Search';
+        }
+      });
+    });
+
+    // Subscribe button: simple confirmation state
+    const subscribeBtn = document.querySelector('.subscribe');
+    subscribeBtn.addEventListener('click', () => {
+      subscribeBtn.textContent = 'Subscribed ✓';
+      subscribeBtn.style.background = '#e8e4da';
+      subscribeBtn.disabled = true;
+    });
+
+    // Keep the header date live and accurate
+    const dateEl = document.getElementById('dateDisplay');
+    const today = new Date();
+    dateEl.textContent = today.toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+  </script>
+</body>
+</html>
